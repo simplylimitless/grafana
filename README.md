@@ -2,7 +2,31 @@
 
 Grafana instance for a homelab monitoring dashboard. Docker-based, scraping from the same `homelab-prometheus` stack and exposing dashboards via `localhost:3000`.
 
+## Configuration
+
+Copy the example config and edit it to your liking before deploying:
+
+```bash
+cp config/grafana.ini.example config/grafana.ini
+# Edit config/grafana.ini with your preferred settings
+```
+
+The default covers a standalone homelab deploy (SQLite, local login on `0.0.0.0:3000`). For production setups you'll likely want to:
+
+- Switch the database type to PostgreSQL or MySQL
+- Set `secret_key` and a strong admin password
+- Disable sign-ups and logins (`disable_login_form = true`) behind an SSO / auth proxy
+
 ## Quick start
+
+### Deploy with docker-compose (recommended)
+
+```bash
+cp config/grafana.ini.example config/grafana.ini   # edit to taste
+docker compose up -d
+```
+
+This mounts your `config/grafana.ini` into the container and persists dashboard data in a named volume. Browse to `http://localhost:3000` (default credentials: `admin/admin`).
 
 ### Deploy from GitHub Container Registry
 
@@ -18,8 +42,6 @@ docker run -p 3000:3000 --name grafana ghcr.io/simplylimitless/homelab-grafana:l
 docker build -t homelab-grafana .
 docker run -p 3000:3000 --name grafana homelab-grafana
 ```
-
-Browse to `http://localhost:3000` (default credentials: `admin/admin`).
 
 > **Note:** After setting up the `GHCR_PAT` secret, re-run the workflow from the Actions tab or push a test commit if you don't see the image published yet.
 

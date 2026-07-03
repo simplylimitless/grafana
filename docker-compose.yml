@@ -1,0 +1,13 @@
+services:
+  grafana:
+    image: ghcr.io/simplylimitless/homelab-grafana:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  grafana-data:

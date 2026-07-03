@@ -1,0 +1,105 @@
+#################################### Server ####################################
+[server]
+# HTTP port for the Grafana web interface
+http_port = 3000
+
+# Domain name shown in the `<title>` and links — set to your hostname or IP
+domain = localhost
+
+# Root URL if Grafana is served under a subpath (e.g. /grafana/)
+root_url = %(protocol)s://%(domain)s:%(http_port)s/
+
+# Address to bind to — use 0.0.0.0 for containers so the host can reach it
+serve_from_root = true
+listen_address = 0.0.0.0:3000
+
+################################### Path #######################################
+[paths]
+# Data directory (persists across restarts)
+data = /var/lib/grafana
+
+# Logs
+logs = /var/log/grafana
+
+# Plugins placed here by the admin
+plugins = /var/lib/grafana/plugins
+
+# Provisioned dashboards, datasources, etc.
+provisioning = /etc/grafana/provisioning
+
+################################### Database ####################################
+[database]
+# Grafana uses SQLite3 by default — fine for homelab / single-user use
+type = sqlite3
+host = 127.0.0.1:5432
+name = grafana
+user = root
+password = ""
+
+# For PostgreSQL or MySQL, switch type above and fill in host / credentials.
+# SQLite is the simplest path for a standalone container.
+
+################################ Server (SSL) ##################################
+[security]
+# Secret key used for encrypting sensitive data in the database
+# Generate one with: head -c 16 /dev/urandom | base64
+secret_key = SW2YcwTIb9zpOOhoPsMm
+
+# Disable the default admin account after first login (recommended for prod)
+disable_initial_admin_creation = false
+
+################################### Log ##########################################
+[log]
+# One of: debug, info, warn, error, fatal, trace
+mode = console
+
+# Also write logs to file — useful when stdout/stderr aren't captured
+# [log].file will take effect if you uncomment this section.
+# level = info
+# filename = /var/log/grafana/grafana.log
+
+[log.console]
+level = info
+
+################################ Datasources ####################################
+# Provision datasources via the provisioning directory instead of editing here.
+# See provisioning/datasources/ for the YAML-based approach.
+
+################################ Dashboards ######################################
+# Provision dashboards via provisioning/dashboards/ YAML files.
+# That keeps your dashboard definitions in version control alongside this config.
+
+################################ Auth (login) ###################################
+[auth]
+# Hide Login and Password buttons on the login page (SAML / OAuth-only)
+disable_login_form = false
+
+# Disable OAuth signup — only let existing accounts log in
+disable_signout_menu = false
+
+# URL for external Grafana instances to authenticate against (SSO / proxy)
+# anonymous_org_name = Internal
+# signout_redirect_url =
+
+################################ Users ###########################################
+[users]
+# Allow new users to self-register (set false behind SSO / auth proxy)
+allow_sign_up = true
+
+# Default role for new users
+default_role = viewer
+
+################################ Snapshot ########################################
+[snapshots]
+# Disable public snapshot sharing in a homelab or private deploy
+external_mode = disabled
+
+################################ Alerting ########################################
+[alerting]
+# Built-in alerting (Grafana 10+) — set to false if you prefer external Alertmanager
+enabled = true
+
+################################ Dashboards History #############################
+[dashboards]
+# How long to keep dashboard versions (e.g. "90d", "365d") — 0 = never remove
+versions_to_keep = 20
