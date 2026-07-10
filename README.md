@@ -2,6 +2,8 @@
 
 Grafana instance for a homelab monitoring dashboard. Docker-based, scraping from the same `homelab-prometheus` stack and exposing dashboards via `localhost:3000`.
 
+Published images are multi-arch (`linux/amd64`, `linux/arm64`, `linux/arm/v7`), so they run unmodified on x86 servers, 64-bit ARM boards (e.g. Raspberry Pi 4/5, 64-bit OS), and older 32-bit ARMv7 boards.
+
 ## Configuration
 
 Copy the example config and edit it to your liking before deploying:
@@ -92,11 +94,19 @@ docker run -d --name grafana -p 3000:3000 \
   homelab-grafana
 ```
 
+This produces a single-arch image for your local machine. To build and load a multi-arch image (e.g. to test an ARM target from an x86 host), use `docker buildx` with QEMU emulation:
+
+```bash
+docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t homelab-grafana .
+```
+
+Note that `--load` only accepts one platform at a time; multi-platform builds must be pushed to a registry (`--push`) or built one platform at a time for local use.
+
 > **Note:** After setting up the `GHCR_PAT` secret, re-run the workflow from the Actions tab or push a test commit if you don't see the image published yet.
 
 ### CI/CD
 
-Pushing to `main` triggers an automatic build (see [`.github/workflows/docker.yml`](.github/workflows/docker.yml)). Each push is tagged with both `latest` and a numeric build ID for rollback:
+Pushing to `main` triggers an automatic multi-arch build for `linux/amd64`, `linux/arm64`, and `linux/arm/v7` (see [`.github/workflows/docker.yml`](.github/workflows/docker.yml)), using QEMU + Buildx to cross-build the non-native architectures. Each push is tagged with both `latest` and a numeric build ID for rollback:
 
 ```bash
 docker pull ghcr.io/simplylimitless/homelab-grafana:3
